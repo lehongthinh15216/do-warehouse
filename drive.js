@@ -89,7 +89,7 @@ function getRedirectUri() {
 
 window.driveSignIn = function() {
     const authUrl = buildAuthUrl();
-    if (window.electronAPI) {
+    if (window.location.protocol === 'file:') {
         // Electron: open OAuth in a popup window that Electron main intercepts
         window.open(authUrl, 'Google Sign-In', 'width=500,height=600');
     } else {
@@ -136,24 +136,21 @@ function handleOAuthCallback() {
 // ─── Drive API Helpers ────────────────────────────────────────────────────────
 
 async function driveRequest(url, options = {}) {
-    if (!isTokenValid()) {
-        throw new Error('Not authenticated');
-    }
-    const res = await fetch(url, {
-        ...options,
-        headers: {
-            'Authorization': `Bearer ${DRIVE_STATE.accessToken}`,
-            ...(options.headers || {})
-        }
-    });
+    if (!isTokenValid()) throw new Error('Not authenticated');
+    
+    options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${DRIVE_STATE.accessToken}`
+    };
+
+    const res = await fetch(url, options);
     if (res.status === 401) {
         clearToken();
-        showSignInOverlay();
-        throw new Error('Token expired — please sign in again');
+        throw new Error('Token expired');
     }
     if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Drive API error ${res.status}: ${text}`);
+        const err = await res.json().catch(() => ({}));
+        throw new Error(`Google Drive API Error: ${err.error?.message || res.statusText}`);
     }
     return res;
 }
@@ -266,8 +263,10 @@ window.driveRead = async function(filename) {
                 const data = JSON.parse(cached);
                 // Upload local cache to Drive so it's backed up
                 await driveWrite(filename, data, { silent: true });
+                updateSyncUI('synced');
                 return data;
             }
+            updateSyncUI('synced');
             return [];
         }
 

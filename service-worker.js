@@ -34,30 +34,29 @@ self.addEventListener('fetch', event => {
     // Don't intercept Google API calls or OAuth redirects
     if (event.request.url.includes('googleapis.com') || 
         event.request.url.includes('accounts.google.com') ||
-        event.request.url.includes('/api/')) {
+        event.request.url.includes('/api/') ||
+        event.request.method !== 'GET') {
         return;
     }
 
     event.respondWith(
-        caches.match(event.request)
-            .then(cachedResponse => {
-                if (cachedResponse) {
-                    return cachedResponse;
+        caches.match(event.request).then(cachedResponse => {
+            const networkFetch = fetch(event.request).then(networkResponse => {
+                // Update the cache with the newest version from the network
+                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
                 }
-                return fetch(event.request).then(response => {
-                    // Don't cache non-GET requests or error responses
-                    if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
-                        return response;
-                    }
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            cache.put(event.request, responseToCache);
-                        });
-                    return response;
-                });
+                return networkResponse;
             }).catch(() => {
-                // If offline and request fails, we could return a fallback page here
-            })
+                // Network failed, we'll just rely on the cached response if available
+            });
+
+            // Return cached response immediately if available (stale-while-revalidate)
+            // Or wait for the network response if not in cache
+            return cachedResponse || networkFetch;
+        })
     );
 });
