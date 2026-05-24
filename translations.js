@@ -1,0 +1,283 @@
+const translations = {
+    en: {
+        nav_dashboard: "Dashboard",
+        nav_inventory: "Inventory",
+        nav_samples: "Samples",
+        nav_logs: "Logs",
+        nav_theme: "Switch Theme",
+        nav_settings: "Settings",
+        user_role: "Warehouse Mgr",
+        btn_bulk_add: "Bulk Add",
+        btn_add_item: "Add Item",
+        dash_title: "Dashboard Overview",
+        dash_subtitle: "Welcome back! Here's what's happening in the warehouse today.",
+        inv_title: "Inventory Management",
+        filter_all_types: "All Types",
+        filter_sample: "Sample",
+        filter_gift: "Gift",
+        filter_other: "Other",
+        filter_all_brands: "All Brands",
+        filter_all_locations: "All Locations",
+        th_name: "Name",
+        th_brand: "Brand",
+        th_type: "Type",
+        th_location: "Location",
+        th_details: "Details",
+        th_status: "Status",
+        th_actions: "Actions",
+        sample_title: "Sample Tracking",
+        filter_all_statuses: "All Statuses",
+        filter_available: "Available",
+        filter_assigned: "Assigned",
+        th_sample: "Sample",
+        th_assignee: "Assignee",
+        th_date_assigned: "Date Assigned",
+        th_return_date: "Return Date",
+        logs_title: "Activity Logs",
+        logs_subtitle: "Track items and gifts coming in and going out.",
+        th_action: "Action",
+        th_time: "Time",
+        settings_title: "Settings",
+        settings_subtitle: "Manage your account, preferences, and system settings.",
+        set_appearance: "Appearance",
+        set_theme: "Theme",
+        set_theme_desc: "Toggle between Dark and Light mode",
+        set_language: "Language",
+        set_language_desc: "Choose your preferred language",
+        set_account: "Account & Data",
+        set_export: "Export Data",
+        set_export_desc: "Download your entire inventory as CSV",
+        set_notif: "Notifications",
+        set_notif_desc: "Manage low stock alerts and updates",
+        modal_add_title: "Add New Inventory Item",
+        label_type: "Item Type",
+        label_name: "Name",
+        label_brand: "Brand",
+        label_location: "Location",
+        label_serial: "Serial Number",
+        label_condition: "Condition",
+        label_qty: "Quantity",
+        label_desc: "Description",
+        btn_cancel: "Cancel",
+        btn_save: "Save Item",
+        btn_save_info: "Save Info",
+        btn_save_notes: "Save Notes",
+        label_item_info: "ITEM INFO",
+        current_assignment: "CURRENT ASSIGNMENT",
+        btn_return_sample: "Return Sample",
+        modal_bulk_title: "Bulk Add Items",
+        th_qty_serial: "Qty / Serial",
+        btn_add_row: "Add Another Row",
+        btn_save_all: "Save All Items",
+        modal_assign_title: "Assign Sample",
+        label_assignee: "Assignee Name",
+        label_date_assigned: "Date Assigned",
+        label_expected_return: "Expected Return Date",
+        label_notes: "Notes",
+        btn_assign: "Assign",
+        modal_stock_title: "Manage Stock",
+        label_action: "Action",
+        action_received: "Received (+)",
+        action_sent: "Sent (-)",
+        action_adjust: "Adjust (=)",
+        label_amount: "Amount",
+        btn_update_stock: "Update Stock",
+        modal_sample_details: "Sample Details",
+        btn_close: "Close",
+        total_samples: "Total Samples",
+        available: "Available",
+        assigned: "Assigned",
+        edit: "Edit",
+        delete: "Delete",
+        assign: "Assign",
+        return: "Return",
+        stock: "Stock",
+        in_stock: "In Stock",
+        out_of_stock: "Out of Stock",
+        fullbox: "FULLBOX",
+        nobox: "NOBOX",
+        nav_sign_out: "Sign Out",
+        search_placeholder: "Search by name, brand, serial...",
+        btn_toggle_theme: "Toggle Theme",
+        btn_export_csv: "Export CSV",
+        btn_configure: "Configure",
+        placeholder_item_desc: "Item description",
+        placeholder_brand: "e.g. Sony",
+        placeholder_location: "e.g. A1-Bin4",
+        placeholder_serial: "For samples only",
+        placeholder_optional: "Optional details",
+        placeholder_assignee: "Who is taking this sample?",
+        placeholder_notes: "Optional notes",
+        placeholder_amount: "e.g. 50",
+        placeholder_restock: "e.g. Monthly restock",
+        lang_en: "English",
+        lang_vi: "Tiếng Việt"
+    },
+    vi: {
+        nav_dashboard: "Bảng điều khiển",
+        nav_inventory: "Kho hàng",
+        nav_samples: "Hàng mẫu",
+        nav_logs: "Nhật ký",
+        nav_theme: "Đổi giao diện",
+        nav_settings: "Cài đặt",
+        user_role: "Quản lý kho",
+        btn_bulk_add: "Thêm hàng loạt",
+        btn_add_item: "Thêm mới",
+        dash_title: "Tổng quan",
+        dash_subtitle: "Chào mừng trở lại! Đây là tình hình kho hàng hôm nay.",
+        inv_title: "Quản lý kho hàng",
+        filter_all_types: "Tất cả loại",
+        filter_sample: "Hàng mẫu",
+        filter_gift: "Quà tặng",
+        filter_other: "Khác",
+        filter_all_brands: "Tất cả thương hiệu",
+        filter_all_locations: "Tất cả vị trí",
+        th_name: "Tên sản phẩm",
+        th_brand: "Thương hiệu",
+        th_type: "Loại",
+        th_location: "Vị trí",
+        th_details: "Chi tiết",
+        th_status: "Trạng thái",
+        th_actions: "Thao tác",
+        sample_title: "Quản lý hàng mẫu",
+        filter_all_statuses: "Tất cả trạng thái",
+        filter_available: "Có sẵn",
+        filter_assigned: "Đã giao",
+        th_sample: "Hàng mẫu",
+        th_assignee: "Người nhận",
+        th_date_assigned: "Ngày giao",
+        th_return_date: "Ngày hẹn trả",
+        logs_title: "Nhật ký hoạt động",
+        logs_subtitle: "Theo dõi luồng hàng nhập xuất.",
+        th_action: "Thao tác",
+        th_time: "Thời gian",
+        settings_title: "Cài đặt",
+        settings_subtitle: "Quản lý tài khoản, tuỳ chọn và hệ thống.",
+        set_appearance: "Giao diện",
+        set_theme: "Chế độ hiển thị",
+        set_theme_desc: "Chuyển đổi Sáng/Tối",
+        set_language: "Ngôn ngữ",
+        set_language_desc: "Thay đổi ngôn ngữ hệ thống",
+        set_account: "Tài khoản & Dữ liệu",
+        set_export: "Xuất dữ liệu",
+        set_export_desc: "Tải toàn bộ dữ liệu kho (CSV)",
+        set_notif: "Thông báo",
+        set_notif_desc: "Quản lý cảnh báo hết hàng",
+        modal_add_title: "Thêm sản phẩm mới",
+        label_type: "Phân loại",
+        label_name: "Tên sản phẩm",
+        label_brand: "Thương hiệu",
+        label_location: "Vị trí lưu trữ",
+        label_serial: "Số Serial",
+        label_condition: "Tình trạng",
+        label_qty: "Số lượng",
+        label_desc: "Mô tả",
+        btn_cancel: "Hủy",
+        btn_save: "Lưu lại",
+        btn_save_info: "Lưu Thông Tin",
+        btn_save_notes: "Lưu Ghi Chú",
+        label_item_info: "THÔNG TIN ITEM",
+        current_assignment: "ĐANG CHO MƯỢN",
+        btn_return_sample: "Thu hồi Sample",
+        modal_bulk_title: "Thêm hàng loạt",
+        th_qty_serial: "Số lượng / Serial",
+        btn_add_row: "Thêm dòng mới",
+        btn_save_all: "Lưu tất cả",
+        modal_assign_title: "Bàn giao hàng mẫu",
+        label_assignee: "Tên người nhận",
+        label_date_assigned: "Ngày giao",
+        label_expected_return: "Ngày hẹn trả",
+        label_notes: "Ghi chú",
+        btn_assign: "Bàn giao",
+        modal_stock_title: "Quản lý tồn kho",
+        label_action: "Thao tác",
+        action_received: "Nhập hàng (+)",
+        action_sent: "Xuất hàng (-)",
+        action_adjust: "Điều chỉnh (=)",
+        label_amount: "Số lượng",
+        btn_update_stock: "Cập nhật",
+        modal_sample_details: "Chi tiết hàng mẫu",
+        btn_close: "Đóng",
+        total_samples: "Tổng số mẫu",
+        available: "Có sẵn",
+        assigned: "Đã giao",
+        edit: "Chỉnh sửa",
+        delete: "Xóa",
+        assign: "Bàn giao",
+        return: "Thu hồi",
+        stock: "Nhập/Xuất",
+        in_stock: "Còn hàng",
+        out_of_stock: "Hết hàng",
+        fullbox: "FULLBOX",
+        nobox: "NOBOX",
+        nav_sign_out: "Đăng xuất",
+        search_placeholder: "Tìm kiếm theo tên, thương hiệu, serial...",
+        btn_toggle_theme: "Đổi Giao Diện",
+        btn_export_csv: "Xuất CSV",
+        btn_configure: "Cấu hình",
+        placeholder_item_desc: "Mô tả sản phẩm",
+        placeholder_brand: "vd: Sony",
+        placeholder_location: "vd: A1-Bin4",
+        placeholder_serial: "Chỉ dành cho hàng mẫu",
+        placeholder_optional: "Chi tiết tuỳ chọn",
+        placeholder_assignee: "Ai đang nhận mẫu này?",
+        placeholder_notes: "Ghi chú tuỳ chọn",
+        placeholder_amount: "vd: 50",
+        placeholder_restock: "vd: Nhập hàng tháng",
+        lang_en: "English",
+        lang_vi: "Tiếng Việt"
+    }
+};
+
+let currentLang = localStorage.getItem('language') || 'en';
+
+function t(key) {
+    if (translations[currentLang] && translations[currentLang][key]) {
+        return translations[currentLang][key];
+    }
+    return key;
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('language', lang);
+    
+    // Update all static data-i18n elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = t(key);
+        } else if (el.tagName === 'OPTION') {
+            el.textContent = t(key);
+        } else {
+            // Find span child and update, else textContent
+            const span = el.querySelector('span');
+            if (span && !span.classList.contains('value')) {
+                span.textContent = t(key);
+            } else {
+                let textNodeFound = false;
+                for (let child of el.childNodes) {
+                    if (child.nodeType === 3 && child.nodeValue.trim().length > 0) { // Text node
+                        child.nodeValue = " " + t(key);
+                        textNodeFound = true;
+                        break;
+                    }
+                }
+                if(!textNodeFound && !span) {
+                    el.textContent = t(key);
+                }
+            }
+        }
+    });
+
+    const langSelect = document.getElementById('settingsLanguageSelect');
+    if (langSelect) langSelect.value = lang;
+
+    // Dispatch event to app.js
+    window.dispatchEvent(new Event('languageChanged'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLang);
+});
+
