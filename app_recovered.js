@@ -57,10 +57,10 @@ const fieldCondition = document.getElementById('fieldCondition');
 const fieldQuantity = document.getElementById('fieldQuantity');
 
 // Other Modals
-const AssignModal = document.getElementById('assignModal');
+const AssignModal = document.getElementById('AssignModal');
 const closeAssignModalBtn = document.getElementById('closeAssignModalBtn');
 const cancelAssignModalBtn = document.getElementById('cancelAssignModalBtn');
-const AssignForm = document.getElementById('assignForm');
+const AssignForm = document.getElementById('AssignForm');
 
 const StockModal = document.getElementById('StockModal');
 const closeStockModalBtn = document.getElementById('closeStockModalBtn');
@@ -129,7 +129,7 @@ window.fetchInitialData = async function fetchInitialData() {
         populateFilterDropdowns();
         updateDashboardStats();
         applyFiltersAndRender();
-        applySampleFiltersAndRender(); updateDashboardStats();
+        applySampleFiltersAndRender();
         renderActivityLog();
         renderFullActivityLog();
     } catch (e) {
@@ -210,7 +210,7 @@ function setupEventListeners() {
             });
             
             if(targetViewId === 'inventoryView') applyFiltersAndRender();
-            if(targetViewId === 'samplesView') applySampleFiltersAndRender(); updateDashboardStats();
+            if(targetViewId === 'samplesView') applySampleFiltersAndRender();
             if(targetViewId === 'logsView') renderFullActivityLog();
             if(targetViewId === 'dashboardView') updateSearchBadge(null);
             
@@ -245,7 +245,7 @@ function setupEventListeners() {
             currentSampleView = 'list';
             btnSampleListView.classList.add('active');
             btnSampleGridView.classList.remove('active');
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
         });
     }
 
@@ -254,7 +254,7 @@ function setupEventListeners() {
             currentSampleView = 'grid';
             btnSampleGridView.classList.add('active');
             btnSampleListView.classList.remove('active');
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
         });
     }
 
@@ -275,7 +275,7 @@ function setupEventListeners() {
             const hasSearch = currentSearchTerm.length > 0;
             if(searchClearBtn) searchClearBtn.style.display = hasSearch ? 'flex' : 'none';
             applyFiltersAndRender();
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
             renderFullActivityLog();
         });
     }
@@ -296,7 +296,7 @@ function setupEventListeners() {
             searchClearBtn.style.display = 'none';
             if(searchResultBadge) searchResultBadge.style.display = 'none';
             applyFiltersAndRender();
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
             renderFullActivityLog();
             
             if (window.innerWidth <= 768) {
@@ -400,7 +400,7 @@ function setupEventListeners() {
             populateFilterDropdowns();
             updateDashboardStats();
             applyFiltersAndRender();
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
             closeItemModal();
         } catch (error) {
             console.error("Error saving item: ", error);
@@ -473,7 +473,7 @@ function setupEventListeners() {
             populateFilterDropdowns();
             updateDashboardStats();
             applyFiltersAndRender();
-            applySampleFiltersAndRender(); updateDashboardStats();
+            applySampleFiltersAndRender();
             closeBulkModal();
         } catch (error) {
             console.error("Error bulk saving items: ", error);
@@ -492,16 +492,16 @@ function setupEventListeners() {
 
     if(AssignForm) AssignForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const itemId = document.getElementById('assignItemId').value;
+        const itemId = document.getElementById('AssignItemId').value;
         const item = inventory.find(i => i.id === itemId);
         
         if(item) {
             try {
                 const updates = {
-                    assignee: document.getElementById('assignName').value,
-                    dateAssigned: document.getElementById('assignDateAssigned').value,
-                    returnDate: document.getElementById('assignExpectedReturn').value || 'N/A',
-                    notes: document.getElementById('assignNotes').value,
+                    assignee: document.getElementById('AssignName').value,
+                    dateAssigned: document.getElementById('AssignDateAssigned').value,
+                    returnDate: document.getElementById('AssignExpectedReturn').value || 'N/A',
+                    notes: document.getElementById('AssignNotes').value,
                     sampleStatus: 'Assigned'
                 };
                 const index = inventory.findIndex(i => i.id === itemId);
@@ -513,7 +513,7 @@ function setupEventListeners() {
                 logActivity('update', `Assigned <strong>${item.name}</strong>${item.serial ? ` (SN: ${item.serial})` : ''} to ${updates.assignee}`);
                 
                 applyFiltersAndRender();
-                applySampleFiltersAndRender(); updateDashboardStats();
+                applySampleFiltersAndRender();
                 closeAssignModal();
             } catch (error) {
                 console.error("Error Assigning item: ", error);
@@ -567,7 +567,7 @@ function setupEventListeners() {
                 logActivity('update', `${actionText} of <strong>${item.name}</strong>. Desc: ${description}`);
                 
                 applyFiltersAndRender();
-                applySampleFiltersAndRender(); updateDashboardStats();
+                applySampleFiltersAndRender();
                 updateDashboardStats();
                 closeStockModal();
             } catch (error) {
@@ -1180,7 +1180,7 @@ window.saveSampleInfo = async function(id) {
 
         logActivity('update', `Updated info for <strong>${updates.name}</strong>${updates.serial ? ` (SN: ${updates.serial})` : ''}`);
         applyFiltersAndRender();
-        applySampleFiltersAndRender(); updateDashboardStats();
+        applySampleFiltersAndRender();
         populateFilterDropdowns();
 
         const btn = document.getElementById('sdSaveInfoBtn');
@@ -1223,7 +1223,7 @@ window.AssignFromDetailsModal = async function(id) {
         logActivity('update', `Assigned <strong>${item.name}</strong>${item.serial ? ` (SN: ${item.serial})` : ''} to ${assignee}`);
 
         applyFiltersAndRender();
-        applySampleFiltersAndRender(); updateDashboardStats();
+        applySampleFiltersAndRender();
 
         // Refresh the modal to show Assigned state
         sampleDetailsModal.classList.remove('active');
@@ -1248,7 +1248,7 @@ window.saveSampleNotes = async function(id) {
         }
         logActivity('update', `Updated notes for sample <strong>${item.name}</strong>`);
         applyFiltersAndRender();
-        applySampleFiltersAndRender(); updateDashboardStats();
+        applySampleFiltersAndRender();
         const btn = input.nextElementSibling;
         if(btn) {
             const orig = btn.innerHTML;
@@ -1277,7 +1277,7 @@ window.deleteItem = async function(id) {
                 
                 populateFilterDropdowns();
                 applyFiltersAndRender();
-                applySampleFiltersAndRender(); updateDashboardStats();
+                applySampleFiltersAndRender();
                 updateDashboardStats();
             } catch (error) {
                 console.error("Error deleting item: ", error);
@@ -1315,7 +1315,7 @@ window.returnSample = async function(id) {
                 logActivity('update', `Returned <strong>${item.name}</strong>${item.serial ? ` (SN: ${item.serial})` : ''} from ${item.assignee}`);
                 
                 applyFiltersAndRender();
-                applySampleFiltersAndRender(); updateDashboardStats();
+                applySampleFiltersAndRender();
             } catch (error) {
                 console.error("Error Returning sample: ", error);
             }
@@ -1426,7 +1426,7 @@ window.navigateToSampleBrand = function(brand) {
     if(filterSampleBrand) {
         filterSampleBrand.value = brand;
     }
-    applySampleFiltersAndRender(); updateDashboardStats();
+    applySampleFiltersAndRender();
 };
 
 function renderActivityLog() {
@@ -1501,7 +1501,7 @@ window.addEventListener('languageChanged', () => {
     populateFilterDropdowns();
     updateDashboardStats();
     applyFiltersAndRender();
-    applySampleFiltersAndRender(); updateDashboardStats();
+    applySampleFiltersAndRender();
     renderActivityLog();
     if(typeof renderFullActivityLog === 'function') renderFullActivityLog();
 });

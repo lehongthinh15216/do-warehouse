@@ -242,8 +242,8 @@ async function getFileId(filename) {
 window.driveRead = async function(filename) {
     const localKey = `dw_data_${filename}`;
 
-    // If not authenticated, return cached data
-    if (!isTokenValid()) {
+    // If not authenticated or in demo mode, return cached data
+    if (window.DEMO_MODE || !isTokenValid()) {
         const cached = localStorage.getItem(localKey);
         if (cached) {
             try { return JSON.parse(cached); } catch (e) {}
@@ -320,10 +320,10 @@ window.driveWrite = async function(filename, data, options = {}) {
     // ✅ SAVE TO LOCAL CACHE FIRST — data is safe even if Drive fails
     localStorage.setItem(localKey, JSON.stringify(data));
 
-    if (!isTokenValid()) {
-        console.warn('[Drive] Not authenticated — data saved locally only');
-        updateSyncUI('offline');
-        return false;
+    if (window.DEMO_MODE || !isTokenValid()) {
+        if (!window.DEMO_MODE) console.warn('[Drive] Not authenticated — data saved locally only');
+        updateSyncUI('offline', window.DEMO_MODE ? 'Demo Mode' : 'Offline');
+        return true;
     }
 
     try {
@@ -384,7 +384,7 @@ function updateSyncUI(status, message) {
         'signed-out': { icon: 'bx-cloud-upload',    label: 'Sign in to sync' },
         'syncing':    { icon: 'bx-loader-circle',   label: 'Syncing...' },
         'synced':     { icon: 'bx-cloud-done',      label: DRIVE_STATE.lastSynced ? 'Synced ' + formatTimeAgo(DRIVE_STATE.lastSynced) : 'Synced' },
-        'offline':    { icon: 'bx-wifi-off',        label: 'Offline — local only' },
+        'offline':    { icon: 'bx-wifi-off',        label: message || 'Offline - local only' },
         'error':      { icon: 'bx-error',           label: message || 'Sync error' }
     };
 
@@ -419,11 +419,26 @@ function hideSignInOverlay() {
 
 // ─── Initialization ───────────────────────────────────────────────────────────
 
+window.startDemoMode = function() {
+    window.DEMO_MODE = true;
+    hideSignInOverlay();
+    updateSyncUI('offline', 'Demo Mode');
+    // Re-trigger fetchInitialData which is normally triggered by the caller of initDriveSync
+    if (typeof window.fetchInitialData === 'function') {
+        window.fetchInitialData();
+    }
+};
+
 /**
  * Initialize Drive sync. Called once on app start.
  * Returns true if authenticated, false if sign-in required.
  */
 window.initDriveSync = async function() {
+    if (window.DEMO_MODE) {
+        hideSignInOverlay();
+        return true;
+    }
+
     // Check for OAuth callback token in URL
     const callbackHandled = handleOAuthCallback();
 
