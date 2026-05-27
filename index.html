@@ -333,6 +333,9 @@
                             <div class="manual-controls">
                                 <button class="secondary-btn control-adjust-btn" id="btnDecrement"><i class='bx bx-minus'></i></button>
                                 <button class="primary-btn control-adjust-btn pulse-btn" id="btnIncrement"><i class='bx bx-plus'></i></button>
+                                <button class="primary-btn" id="btnTransferCounter" style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                    <i class='bx bx-transfer'></i> <span data-i18n="btn_transfer">Transfer</span>
+                                </button>
                                 <button class="secondary-btn reset-btn" id="btnResetCounter" style="display: flex; align-items: center; gap: 8px;">
                                     <i class='bx bx-refresh'></i> <span data-i18n="btn_reset">Reset</span>
                                 </button>
@@ -476,9 +479,14 @@
                     <input type="text" id="itemDesc" data-i18n="placeholder_optional" placeholder="Optional details">
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="secondary-btn" id="cancelModalBtn" data-i18n="btn_cancel">Cancel</button>
-                    <button type="submit" class="primary-btn" data-i18n="btn_save">Save Item</button>
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button type="button" class="secondary-btn" id="btnManageStockModal" style="display:none; align-items:center; gap:8px;">
+                        <i class='bx bx-transfer'></i> <span data-i18n="stock">Stock</span>
+                    </button>
+                    <div style="display:flex; gap:12px;">
+                        <button type="button" class="secondary-btn" id="cancelModalBtn" data-i18n="btn_cancel">Cancel</button>
+                        <button type="submit" class="primary-btn" data-i18n="btn_save">Save Item</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -609,6 +617,54 @@
             <div class="modal-footer">
                 <button type="button" class="secondary-btn" id="closeSampleDetailsFooterBtn" data-i18n="btn_close">Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div class="modal-overlay" id="transferModal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3 data-i18n="modal_transfer_title">Transfer to Item</h3>
+                <button class="close-btn" id="closeTransferModalBtn"><i class='bx bx-x'></i></button>
+            </div>
+            <form id="transferForm" class="modal-form">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 8px;" data-i18n="transfer_tally_info">Tally Amount to Transfer</h4>
+                    <span id="transferAmountDisplay" class="tag-badge tag-type">0</span>
+                </div>
+                <div class="form-group">
+                    <label for="transferItemSearch" data-i18n="label_select_item">Select Item</label>
+                    <input type="text" id="transferItemSearch" list="transferItemsList" required data-i18n="placeholder_search_item" placeholder="Type to search items..." autocomplete="off">
+                    <datalist id="transferItemsList">
+                        <!-- Populated by JS -->
+                    </datalist>
+                    <div style="margin-top: 8px;">
+                        <span id="transferCurrentQtyDisplay" class="tag-badge tag-type" style="display:none;"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_action">Action</label>
+                    <div style="display: flex; gap: 16px; margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
+                            <input type="radio" name="transferAction" value="received" checked> Received (+)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
+                            <input type="radio" name="transferAction" value="sent"> <span data-i18n="action_sent">Sent (-)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
+                            <input type="radio" name="transferAction" value="adjust"> <span data-i18n="action_adjust">Adjust (=)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="transferDescription" data-i18n="label_desc">Description</label>
+                    <input type="text" id="transferDescription" data-i18n="placeholder_restock" placeholder="Optional details">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" id="cancelTransferModalBtn" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="primary-btn" data-i18n="btn_confirm_transfer">Confirm Transfer</button>
+                </div>
+            </form>
         </div>
     </div>
 

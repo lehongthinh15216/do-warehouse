@@ -125,7 +125,15 @@ const translations = {
         placeholder_manual_scan: "Enter barcode...",
         btn_add_manual: "Add",
         no_scans_yet: "No scans yet",
-        confirm_reset: "Are you sure you want to reset the tally?"
+        confirm_reset: "Are you sure you want to reset the tally?",
+        btn_transfer: "Transfer",
+        modal_transfer_title: "Transfer to Item",
+        transfer_tally_info: "Tally Amount to Transfer",
+        label_select_item: "Select Item",
+        placeholder_search_item: "Type to search items...",
+        btn_confirm_transfer: "Confirm Transfer",
+        transfer_success: "Transfer successful!",
+        transfer_no_item: "Please select a valid item."
     },
     vi: {
         nav_dashboard: "Bảng điều khiển",
@@ -253,7 +261,15 @@ const translations = {
         placeholder_manual_scan: "Nhập mã vạch...",
         btn_add_manual: "Thêm",
         no_scans_yet: "Chưa có lượt quét nào",
-        confirm_reset: "Bạn có chắc chắn muốn đặt lại bộ đếm không?"
+        confirm_reset: "Bạn có chắc chắn muốn đặt lại bộ đếm không?",
+        btn_transfer: "Chuyển",
+        modal_transfer_title: "Chuyển vào sản phẩm",
+        transfer_tally_info: "Số lượng sẽ chuyển",
+        label_select_item: "Chọn sản phẩm",
+        placeholder_search_item: "Nhập để tìm kiếm sản phẩm...",
+        btn_confirm_transfer: "Xác nhận chuyển",
+        transfer_success: "Chuyển thành công!",
+        transfer_no_item: "Vui lòng chọn sản phẩm hợp lệ."
     }
 };
 

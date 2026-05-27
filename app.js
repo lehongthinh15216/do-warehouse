@@ -67,16 +67,27 @@ const closeAssignModalBtn = document.getElementById('closeAssignModalBtn');
 const cancelAssignModalBtn = document.getElementById('cancelAssignModalBtn');
 const AssignForm = document.getElementById('assignForm');
 
-const StockModal = document.getElementById('StockModal');
+const stockModal = document.getElementById('stockModal');
 const closeStockModalBtn = document.getElementById('closeStockModalBtn');
 const cancelStockModalBtn = document.getElementById('cancelStockModalBtn');
-const StockForm = document.getElementById('StockForm');
+const stockForm = document.getElementById('stockForm');
 
 // Sample Details Modal
 const sampleDetailsModal = document.getElementById('sampleDetailsModal');
 const closeSampleDetailsBtn = document.getElementById('closeSampleDetailsBtn');
 const closeSampleDetailsFooterBtn = document.getElementById('closeSampleDetailsFooterBtn');
 const sampleDetailsContent = document.getElementById('sampleDetailsContent');
+
+// Transfer Modal
+const transferModal = document.getElementById('transferModal');
+const closeTransferModalBtn = document.getElementById('closeTransferModalBtn');
+const cancelTransferModalBtn = document.getElementById('cancelTransferModalBtn');
+const transferForm = document.getElementById('transferForm');
+const transferItemSearch = document.getElementById('transferItemSearch');
+const transferItemsList = document.getElementById('transferItemsList');
+const transferAmountDisplay = document.getElementById('transferAmountDisplay');
+const transferCurrentQtyDisplay = document.getElementById('transferCurrentQtyDisplay');
+
 
 // Stats Elements
 const activityList = document.getElementById('activityList');
@@ -242,6 +253,35 @@ window.fetchInitialData = async function fetchInitialData() {
             driveRead('item-data.json'),
             driveRead('log-data.json')
         ]);
+        
+        // Auto-populate random data for testing if empty
+        if (inventory.length === 0) {
+            const brands = ['Sony', 'Apple', 'Samsung', 'Logitech', 'Dell', 'Asus'];
+            const types = ['gift', 'sample', 'other'];
+            const locations = ['A1', 'B2', 'C3', 'Front Desk', 'Storage 1'];
+            for(let i=0; i<15; i++) {
+                let t = types[Math.floor(Math.random()*types.length)];
+                let item = {
+                    id: generateId(),
+                    name: `Test Item ${i+1}`,
+                    brand: brands[Math.floor(Math.random()*brands.length)],
+                    type: t,
+                    location: locations[Math.floor(Math.random()*locations.length)],
+                    description: 'Generated for testing'
+                };
+                if(t === 'sample') {
+                    item.serial = `SN${Math.floor(Math.random()*100000)}`;
+                    item.condition = 'FULLBOX';
+                    item.quantity = 1;
+                    item.sampleStatus = 'available';
+                } else {
+                    item.quantity = Math.floor(Math.random()*50) + 5;
+                }
+                inventory.push(item);
+            }
+            await driveWrite('item-data.json', inventory);
+        }
+
         populateFilterDropdowns();
         updateDashboardStats();
         applyFiltersAndRender();
@@ -639,25 +679,24 @@ function setupEventListeners() {
 
     // Stock Modal Logic
     const closeStockModal = () => {
-        StockModal.classList.remove('active');
-        StockForm.reset();
+        if(stockModal) stockModal.classList.remove('active');
+        if(stockForm) stockForm.reset();
     };
-
     if(closeStockModalBtn) closeStockModalBtn.addEventListener('click', closeStockModal);
     if(cancelStockModalBtn) cancelStockModalBtn.addEventListener('click', closeStockModal);
 
     if(closeSampleDetailsBtn) closeSampleDetailsBtn.addEventListener('click', () => sampleDetailsModal.classList.remove('active'));
     if(closeSampleDetailsFooterBtn) closeSampleDetailsFooterBtn.addEventListener('click', () => sampleDetailsModal.classList.remove('active'));
 
-    if(StockForm) StockForm.addEventListener('submit', async (e) => {
+    if(stockForm) stockForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const itemId = document.getElementById('StockItemId').value;
+        const itemId = document.getElementById('stockItemId').value;
         const item = inventory.find(i => i.id === itemId);
         
         if(item) {
-            const action = document.querySelector('input[name="StockAction"]:checked').value;
-            const amount = parseInt(document.getElementById('StockAmount').value) || 0;
-            const description = document.getElementById('StockDescription').value;
+            const action = document.querySelector('input[name="stockAction"]:checked').value;
+            const amount = parseInt(document.getElementById('stockAmount').value) || 0;
+            const description = document.getElementById('stockDescription').value;
             
             let newQty = item.quantity;
             let actionText = '';
@@ -731,6 +770,105 @@ function setupEventListeners() {
                 counterTally = 0;
                 localStorage.setItem('do_warehouse_counter_tally', counterTally);
                 renderCounterView();
+            }
+        });
+    }
+
+    const btnTransferCounter = document.getElementById('btnTransferCounter');
+    if (btnTransferCounter) {
+        btnTransferCounter.addEventListener('click', () => {
+            if (counterTally === 0) {
+                alert(t('transfer_no_item') || 'Counter is 0, nothing to transfer.');
+                return;
+            }
+            if (transferAmountDisplay) transferAmountDisplay.textContent = counterTally;
+            if (transferItemSearch) transferItemSearch.value = '';
+            
+            if (transferItemsList) {
+                transferItemsList.innerHTML = '';
+                inventory.forEach(item => {
+                    const option = document.createElement('option');
+                    const displayName = `${item.brand ? `[${item.brand}] ` : ''}${item.name}`;
+                    option.value = displayName;
+                    option.dataset.id = item.id;
+                    transferItemsList.appendChild(option);
+                });
+            }
+            if (transferCurrentQtyDisplay) transferCurrentQtyDisplay.style.display = 'none';
+            if (transferModal) transferModal.classList.add('active');
+        });
+    }
+
+    if (transferItemSearch) {
+        transferItemSearch.addEventListener('input', () => {
+            if (!transferCurrentQtyDisplay) return;
+            const searchInput = transferItemSearch.value;
+            const item = inventory.find(i => `${i.brand ? `[${i.brand}] ` : ''}${i.name}` === searchInput);
+            if (item) {
+                transferCurrentQtyDisplay.textContent = `Current Qty: ${item.quantity || 0}`;
+                transferCurrentQtyDisplay.style.display = 'inline-block';
+            } else {
+                transferCurrentQtyDisplay.style.display = 'none';
+            }
+        });
+    }
+
+    const closeTransferModal = () => { if (transferModal) transferModal.classList.remove('active'); };
+    if (closeTransferModalBtn) closeTransferModalBtn.addEventListener('click', closeTransferModal);
+    if (cancelTransferModalBtn) cancelTransferModalBtn.addEventListener('click', closeTransferModal);
+
+    if (transferForm) {
+        transferForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const searchInput = transferItemSearch.value;
+            const item = inventory.find(i => `${i.brand ? `[${i.brand}] ` : ''}${i.name}` === searchInput);
+            
+            if (item) {
+                const action = document.querySelector('input[name="transferAction"]:checked').value;
+                const amount = counterTally;
+                const description = document.getElementById('transferDescription').value || 'Counter transfer';
+
+                try {
+                    const index = inventory.findIndex(i => i.id === item.id);
+                    if (index !== -1) {
+                        let newQty = inventory[index].quantity || 0;
+                        let actionText = '';
+                        
+                        if (action === 'received') {
+                            newQty += amount;
+                            actionText = `Received ${amount}`;
+                        } else if (action === 'sent') {
+                            if (newQty < amount) {
+                                alert(t('insufficient_stock') || 'Insufficient stock for this action.');
+                                return;
+                            }
+                            newQty -= amount;
+                            actionText = `Sent ${amount}`;
+                        } else if (action === 'adjust') {
+                            newQty = amount;
+                            actionText = `Adjusted Stock to ${amount}`;
+                        }
+
+                        inventory[index] = { ...inventory[index], quantity: newQty };
+                        await driveWrite('item-data.json', inventory);
+                        
+                        logActivity('update', `${actionText} of <strong>${item.name}</strong> from Counter. Desc: ${description}`);
+                    }
+                    
+                    applyFiltersAndRender();
+                    applySampleFiltersAndRender(); 
+                    updateDashboardStats();
+                    
+                    counterTally = 0;
+                    localStorage.setItem('do_warehouse_counter_tally', counterTally);
+                    renderCounterView();
+                    closeTransferModal();
+                    alert(t('transfer_success') || 'Transfer successful!');
+                } catch (error) {
+                    console.error("Error transferring tally: ", error);
+                }
+            } else {
+                alert(t('transfer_no_item') || 'Please select a valid item.');
             }
         });
     }
@@ -1226,17 +1364,6 @@ window.openEditModal = function(id) {
     const item = inventory.find(i => i.id === id);
     if (!item) return;
 
-    if (item.type !== 'sample') {
-        document.getElementById('StockItemId').value = item.id;
-        document.getElementById('StockItemNameDisplay').textContent = item.name;
-        document.getElementById('StockCurrentQtyDisplay').textContent = `Current Qty: ${item.quantity}`;
-        document.getElementById('StockAmount').value = '';
-        document.getElementById('StockDescription').value = '';
-        document.querySelector('input[name="StockAction"][value="received"]').checked = true;
-        StockModal.classList.add('active');
-        return;
-    }
-
     const EditIdEl = document.getElementById('EditItemId');
     if(EditIdEl) EditIdEl.value = item.id;
     
@@ -1251,12 +1378,32 @@ window.openEditModal = function(id) {
 
     handleFormTypeChange();
 
+    const btnManageStock = document.getElementById('btnManageStockModal');
+
     if (item.type === 'sample') {
         document.getElementById('itemSerial').value = item.serial || '';
         const condEl = document.getElementById('itemCondition');
         if (condEl) condEl.value = item.condition || 'FULLBOX';
+        if (btnManageStock) btnManageStock.style.display = 'none';
     } else {
         document.getElementById('itemQuantity').value = item.quantity || 0;
+        if (btnManageStock) {
+            btnManageStock.style.display = 'flex';
+            btnManageStock.onclick = () => {
+                const modal = document.getElementById('itemModal');
+                if (modal) modal.classList.remove('active');
+                
+                document.getElementById('stockItemId').value = item.id;
+                document.getElementById('stockItemNameDisplay').textContent = item.name;
+                document.getElementById('stockCurrentQtyDisplay').textContent = `Current Qty: ${item.quantity}`;
+                document.getElementById('stockAmount').value = '';
+                document.getElementById('stockDescription').value = '';
+                document.querySelector('input[name="stockAction"][value="received"]').checked = true;
+                
+                const sModal = document.getElementById('stockModal');
+                if (sModal) sModal.classList.add('active');
+            };
+        }
     }
 
     itemModal.classList.add('active');
@@ -1554,18 +1701,16 @@ window.returnSample = async function(id) {
 async function logActivity(type, text) {
     try {
         const newLog = {
+            id: generateId(),
             type: type,
             text: text,
             time: new Date().toLocaleString()
         };
-        const res = await fetch('/api/logs', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newLog)
-        });
-        const savedLog = await res.json();
-        activityLog.unshift(savedLog);
+        
+        activityLog.unshift(newLog);
         if (activityLog.length > 50) activityLog.pop();
+        
+        await driveWrite('log-data.json', activityLog);
         
         renderActivityLog();
         if(typeof renderFullActivityLog === 'function') renderFullActivityLog();
