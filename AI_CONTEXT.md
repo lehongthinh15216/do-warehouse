@@ -53,3 +53,9 @@ The app is fully installable on Windows, Android, and iOS.
 - **Action Taken:** We briefly attempted to build an Electron Windows `.exe` to wrap the app, but ran into some local symlink build issues. We then decided to pivot to a 100% Progressive Web App (PWA) model hosted on GitHub Pages.
 - **Action Taken:** We wrote a one-time migration script to pull their local PHP JSON data and upload it to their new empty Google Drive database.
 - **Action Taken:** We updated `service-worker.js` to use a `Stale-While-Revalidate` strategy, ensuring the PWA updates automatically in the background whenever the user pushes new code to GitHub Pages. All obsolete Electron and PHP files were successfully deleted from the root directory.
+
+**[2026-05-27] - Counter Tab Enhancements & Offline Robustification**
+- **Action Taken:** Updated the Counter Tab so scanning transfers can directly mirror the Inventory Stock Management functionality. Transferred tallies now support Received/Sent/Adjust logic and feature a live stock lookup badge.
+- **Action Taken:** Integrated the Edit Modal and Stock Modal. Clicking any item opens the Edit modal first, which now contains a dedicated "Stock" button to seamlessly switch into stock transaction mode.
+- **Action Taken:** Addressed an offline logging bug where `logActivity` was attempting a network `fetch` to a nonexistent Node backend. Logs are now securely written to local storage and Google Drive via `driveWrite`.
+- **Action Taken:** Added an auto-populate mechanism to generate mock data if the inventory is completely empty, ensuring easier testing for new environments.
