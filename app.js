@@ -3,6 +3,11 @@ function generateId() { return Date.now().toString(36) + Math.random().toString(
 let inventory = [];
 let activityLog = [];
 
+// Counter State
+let counterTally = parseInt(localStorage.getItem('do_warehouse_counter_tally') || '0', 10);
+let recentScans = JSON.parse(localStorage.getItem('do_warehouse_recent_scans') || '[]');
+let soundEnabled = localStorage.getItem('do_warehouse_counter_sound') !== 'false';
+
 // View State
 let currentInventoryView = 'list';
 let currentSampleView = 'list';
@@ -94,6 +99,116 @@ function updateWelcomeText() {
     }
 }
 
+// Counter functions
+function playBeep() {
+    if (!soundEnabled) return;
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
+    } catch (e) {
+        console.error('Failed to play beep:', e);
+    }
+}
+
+function renderCounterView() {
+    const tallyNumber = document.getElementById('tallyNumber');
+    if (tallyNumber) {
+        tallyNumber.textContent = counterTally;
+    }
+
+    const recentScansList = document.getElementById('recentScansList');
+    if (recentScansList) {
+        recentScansList.innerHTML = '';
+        if (recentScans.length === 0) {
+            recentScansList.innerHTML = `<li style="text-align: center; padding: 24px; color: var(--md-sys-color-on-surface-variant); opacity: 0.6; font-size: 14px;" data-i18n="no_scans_yet">No scans yet</li>`;
+            
+            // Translate the static fallback message if language is Vietnamese
+            const noScansEl = recentScansList.querySelector('[data-i18n="no_scans_yet"]');
+            if (noScansEl && typeof t === 'function') {
+                noScansEl.textContent = t('no_scans_yet');
+            }
+        } else {
+            recentScans.forEach((scan, index) => {
+                const li = document.createElement('li');
+                li.className = 'recent-scans-item';
+                
+                const timeStr = new Date(scan.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                const badge = document.createElement('span');
+                badge.className = 'scan-index-badge';
+                badge.textContent = `#${recentScans.length - index}`;
+
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'scan-code';
+                codeSpan.textContent = scan.code;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'scan-code-wrapper';
+                wrapper.appendChild(badge);
+                wrapper.appendChild(codeSpan);
+
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'scan-time';
+                timeSpan.textContent = timeStr;
+
+                li.appendChild(wrapper);
+                li.appendChild(timeSpan);
+                recentScansList.appendChild(li);
+            });
+        }
+    }
+
+    const btnToggleSound = document.getElementById('btnToggleSound');
+    const soundIcon = document.getElementById('soundIcon');
+    if (btnToggleSound && soundIcon) {
+        if (soundEnabled) {
+            btnToggleSound.classList.add('active');
+            soundIcon.className = 'bx bx-volume-full';
+        } else {
+            btnToggleSound.classList.remove('active');
+            soundIcon.className = 'bx bx-volume-mute';
+        }
+    }
+}
+
+function handleBarcodeScan(code) {
+    if (!code) return;
+    
+    counterTally++;
+    localStorage.setItem('do_warehouse_counter_tally', counterTally);
+    
+    recentScans.unshift({
+        code: code,
+        timestamp: Date.now()
+    });
+    if (recentScans.length > 10) {
+        recentScans = recentScans.slice(0, 10);
+    }
+    localStorage.setItem('do_warehouse_recent_scans', JSON.stringify(recentScans));
+    
+    renderCounterView();
+    playBeep();
+    
+    const tallyDisplayCircle = document.getElementById('tallyDisplayCircle');
+    if (tallyDisplayCircle) {
+        tallyDisplayCircle.classList.remove('pulse-active');
+        void tallyDisplayCircle.offsetWidth; // trigger reflow
+        tallyDisplayCircle.classList.add('pulse-active');
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
@@ -101,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupRipples();
     updateWelcomeText();
     setupEventListeners();
+    renderCounterView();
     fetchInitialData();
 });
 
@@ -574,6 +690,118 @@ function setupEventListeners() {
                 console.error("Error updating Stock: ", error);
             }
         }
+    });
+
+    // --- Barcode Counter Event Listeners ---
+    const btnDecrement = document.getElementById('btnDecrement');
+    if (btnDecrement) {
+        btnDecrement.addEventListener('click', () => {
+            if (counterTally > 0) {
+                counterTally--;
+                localStorage.setItem('do_warehouse_counter_tally', counterTally);
+                renderCounterView();
+            }
+        });
+    }
+
+    const btnIncrement = document.getElementById('btnIncrement');
+    if (btnIncrement) {
+        btnIncrement.addEventListener('click', () => {
+            counterTally++;
+            localStorage.setItem('do_warehouse_counter_tally', counterTally);
+            renderCounterView();
+            
+            // Visual pulse
+            const tallyDisplayCircle = document.getElementById('tallyDisplayCircle');
+            if (tallyDisplayCircle) {
+                tallyDisplayCircle.classList.remove('pulse-active');
+                void tallyDisplayCircle.offsetWidth; // trigger reflow
+                tallyDisplayCircle.classList.add('pulse-active');
+            }
+        });
+    }
+
+    const btnResetCounter = document.getElementById('btnResetCounter');
+    if (btnResetCounter) {
+        btnResetCounter.addEventListener('click', () => {
+            const msg = (typeof t === 'function' && t('confirm_reset') !== 'confirm_reset')
+                ? t('confirm_reset')
+                : (currentLang === 'vi' ? 'Bạn có chắc chắn muốn đặt lại bộ đếm không?' : 'Are you sure you want to reset the tally?');
+            if (confirm(msg)) {
+                counterTally = 0;
+                localStorage.setItem('do_warehouse_counter_tally', counterTally);
+                renderCounterView();
+            }
+        });
+    }
+
+    const btnToggleSound = document.getElementById('btnToggleSound');
+    if (btnToggleSound) {
+        btnToggleSound.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('do_warehouse_counter_sound', soundEnabled);
+            renderCounterView();
+        });
+    }
+
+    const btnClearHistory = document.getElementById('btnClearHistory');
+    if (btnClearHistory) {
+        btnClearHistory.addEventListener('click', () => {
+            recentScans = [];
+            localStorage.setItem('do_warehouse_recent_scans', JSON.stringify(recentScans));
+            renderCounterView();
+        });
+    }
+
+    const manualBarcodeForm = document.getElementById('manualBarcodeForm');
+    const manualBarcodeValue = document.getElementById('manualBarcodeValue');
+    if (manualBarcodeForm && manualBarcodeValue) {
+        manualBarcodeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = manualBarcodeValue.value.trim();
+            if (val) {
+                handleBarcodeScan(val);
+                manualBarcodeValue.value = '';
+            }
+        });
+    }
+
+    // Global keydown listener for barcode scanning
+    let barcodeBuffer = '';
+    let lastKeyTime = Date.now();
+
+    window.addEventListener('keydown', (e) => {
+        const counterView = document.getElementById('counterView');
+        if (!counterView || !counterView.classList.contains('active')) {
+            barcodeBuffer = '';
+            return;
+        }
+
+        const activeTag = document.activeElement ? document.activeElement.tagName.toUpperCase() : '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
+            return;
+        }
+
+        const now = Date.now();
+        if (now - lastKeyTime > 1500) {
+            barcodeBuffer = '';
+        }
+        lastKeyTime = now;
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const trimmed = barcodeBuffer.trim();
+            if (trimmed) {
+                handleBarcodeScan(trimmed);
+            }
+            barcodeBuffer = '';
+        } else if (e.key.length === 1) {
+            barcodeBuffer += e.key;
+        }
+    });
+
+    window.addEventListener('languageChanged', () => {
+        renderCounterView();
     });
 }
 

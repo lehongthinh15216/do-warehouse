@@ -112,7 +112,20 @@ const translations = {
         placeholder_amount: "e.g. 50",
         placeholder_restock: "e.g. Monthly restock",
         lang_en: "English",
-        lang_vi: "Tiếng Việt"
+        lang_vi: "Tiếng Việt",
+        nav_counter: "Counter",
+        counter_title: "Barcode Counter",
+        counter_subtitle: "Scan barcodes to count items quickly",
+        counter_status_ready: "Scanning Active... Scan any barcode to increment count",
+        counter_total: "Total Count",
+        counter_recent: "Recent Scans",
+        counter_clear: "Clear History",
+        counter_sound: "Sound Beep",
+        btn_reset: "Reset Tally",
+        placeholder_manual_scan: "Or type barcode manually...",
+        btn_add_manual: "Add",
+        no_scans_yet: "No scans yet",
+        confirm_reset: "Are you sure you want to reset the tally?"
     },
     vi: {
         nav_dashboard: "Bảng điều khiển",
@@ -227,7 +240,20 @@ const translations = {
         placeholder_amount: "vd: 50",
         placeholder_restock: "vd: Nhập hàng tháng",
         lang_en: "English",
-        lang_vi: "Tiếng Việt"
+        lang_vi: "Tiếng Việt",
+        nav_counter: "Bộ đếm",
+        counter_title: "Bộ đếm mã vạch",
+        counter_subtitle: "Quét mã vạch để đếm nhanh số lượng",
+        counter_status_ready: "Đang quét... Quét mã vạch để tăng số lượng",
+        counter_total: "Tổng số lượng",
+        counter_recent: "Quét gần đây",
+        counter_clear: "Xóa lịch sử",
+        counter_sound: "Âm thanh bíp",
+        btn_reset: "Đặt lại",
+        placeholder_manual_scan: "Hoặc tự nhập mã vạch...",
+        btn_add_manual: "Thêm",
+        no_scans_yet: "Chưa có lượt quét nào",
+        confirm_reset: "Bạn có chắc chắn muốn đặt lại bộ đếm không?"
     }
 };
 

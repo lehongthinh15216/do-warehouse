@@ -1,7 +1,7 @@
 const CACHE_NAME = 'do-warehouse-v1';
 const ASSETS_TO_CACHE = [
     './',
-    './app.html',
+    './index.html',
     './app.js',
     './drive.js',
     './styles.css',

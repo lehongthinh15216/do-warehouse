@@ -1305,3 +1305,221 @@ select option {
     display: flex;
     align-items: center;
 }
+
+/* --- Barcode Counter View --- */
+.counter-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .counter-layout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.counter-card {
+    padding: 24px;
+    border-radius: var(--radius-lg);
+}
+
+.main-tally-card {
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.counter-header h2 {
+    display: block !important;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.counter-header p {
+    display: block !important;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 24px;
+}
+
+.tally-display-wrapper {
+    margin: 32px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tally-circle {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary-container);
+    border: 6px solid var(--md-sys-color-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(243, 112, 33, 0.15);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+}
+
+.tally-circle.pulse-active {
+    animation: tallyPulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 50px rgba(243, 112, 33, 0.5);
+}
+
+@keyframes tallyPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+.tally-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--md-sys-color-on-primary-container);
+    opacity: 0.8;
+}
+
+.tally-number {
+    font-size: 80px;
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+    line-height: 1;
+    margin-top: 8px;
+}
+
+.manual-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.control-adjust-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    padding: 0 !important;
+    cursor: pointer;
+}
+
+.reset-btn {
+    height: 48px;
+    padding: 0 24px;
+}
+
+.scanner-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(16, 109, 32, 0.1);
+    border: 1px solid rgba(16, 109, 32, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--accent-green);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.scanner-status-indicator.inactive {
+    background: rgba(186, 26, 26, 0.1);
+    border: 1px solid rgba(186, 26, 26, 0.2);
+    color: var(--accent-red);
+}
+
+.status-dot-pulse {
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-green);
+    border-radius: 50%;
+    animation: statusDotPulseAnim 1.5s infinite ease-in-out;
+}
+
+.scanner-status-indicator.inactive .status-dot-pulse {
+    background-color: var(--accent-red);
+    animation: none;
+}
+
+@keyframes statusDotPulseAnim {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+.recent-scans-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+
+.recent-scans-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recent-scans-list-container::-webkit-scrollbar-thumb {
+    background-color: var(--md-sys-color-outline-variant);
+    border-radius: 3px;
+}
+
+.recent-scans-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    font-size: 14px;
+    animation: slideInScan 0.25s ease-out forwards;
+}
+
+.recent-scans-item:last-child {
+    border-bottom: none;
+}
+
+@keyframes slideInScan {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.scan-code-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.scan-code {
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+}
+
+.scan-time {
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.scan-index-badge {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
