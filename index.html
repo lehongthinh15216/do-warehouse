@@ -319,13 +319,13 @@
                         <!-- Tally Card -->
                         <div class="counter-card glass-panel main-tally-card">
                             <div class="counter-header">
-                                <h2 data-i18n="counter_title">Barcode Counter</h2>
-                                <p data-i18n="counter_subtitle">Scan barcodes to count items quickly</p>
+                                <h2 data-i18n="counter_title">Scanner</h2>
+                                <p data-i18n="counter_subtitle">Scan barcodes to count items</p>
                             </div>
                             
                             <div class="tally-display-wrapper">
                                 <div class="tally-circle" id="tallyDisplayCircle">
-                                    <span class="tally-label" data-i18n="counter_total">Total Count</span>
+                                    <span class="tally-label" data-i18n="counter_total">Total</span>
                                     <span class="tally-number" id="tallyNumber">0</span>
                                 </div>
                             </div>
@@ -334,7 +334,7 @@
                                 <button class="secondary-btn control-adjust-btn" id="btnDecrement"><i class='bx bx-minus'></i></button>
                                 <button class="primary-btn control-adjust-btn pulse-btn" id="btnIncrement"><i class='bx bx-plus'></i></button>
                                 <button class="secondary-btn reset-btn" id="btnResetCounter" style="display: flex; align-items: center; gap: 8px;">
-                                    <i class='bx bx-refresh'></i> <span data-i18n="btn_reset">Reset Tally</span>
+                                    <i class='bx bx-refresh'></i> <span data-i18n="btn_reset">Reset</span>
                                 </button>
                             </div>
                         </div>
@@ -343,13 +343,13 @@
                         <div class="counter-card glass-panel scanner-control-card">
                             <div class="scanner-status-indicator active">
                                 <div class="status-dot-pulse"></div>
-                                <span data-i18n="counter_status_ready">Scanning Active... Scan any barcode to increment count</span>
+                                <span data-i18n="counter_status_ready">Ready to scan</span>
                             </div>
                             
                             <div class="settings-list" style="margin-top: 16px;">
                                 <div class="settings-item" style="padding: 12px 0; border: none; background: transparent;">
                                     <div class="settings-info">
-                                        <h4 data-i18n="counter_sound" style="margin: 0; font-size: 15px; font-weight: 500;">Sound Beep</h4>
+                                        <h4 data-i18n="counter_sound" style="margin: 0; font-size: 15px; font-weight: 500;">Sound</h4>
                                     </div>
                                     <div class="settings-action">
                                         <button class="icon-btn active" id="btnToggleSound" title="Toggle Sound">
@@ -362,7 +362,7 @@
                             <form id="manualBarcodeForm" class="manual-scan-form" style="margin-top: 16px;">
                                 <div class="search-bar" style="max-width: 100%; min-width: 0; background: rgba(0,0,0,0.15); position: relative; border-radius: var(--radius-md); height: 48px; display: flex; align-items: center; padding: 0 8px;">
                                     <i class='bx bx-barcode' style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--md-sys-color-outline);"></i>
-                                    <input type="text" id="manualBarcodeValue" data-i18n="placeholder_manual_scan" placeholder="Or type barcode manually..." autocomplete="off" style="padding-left: 44px; background: transparent; border: none; color: var(--md-sys-color-on-surface); height: 100%; flex: 1; min-width: 0; outline: none; font-family: inherit; font-size: 14px;">
+                                    <input type="text" id="manualBarcodeValue" data-i18n="placeholder_manual_scan" placeholder="Enter barcode..." autocomplete="off" style="padding-left: 44px; background: transparent; border: none; color: var(--md-sys-color-on-surface); height: 100%; flex: 1; min-width: 0; outline: none; font-family: inherit; font-size: 14px;">
                                     <button type="submit" class="primary-btn" style="padding: 0 16px; border-radius: var(--radius-md); font-size: 13px; height: 32px;" data-i18n="btn_add_manual">Add</button>
                                 </div>
                             </form>
@@ -372,7 +372,7 @@
                         <div class="counter-card glass-panel recent-scans-card">
                             <div class="card-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 12px;">
                                 <h3 data-i18n="counter_recent" style="font-size: 16px; font-weight: 600; margin: 0; color: var(--md-sys-color-on-surface);">Recent Scans</h3>
-                                <button class="secondary-btn" id="btnClearHistory" style="padding: 0 12px; font-size: 12px; height: 28px;" data-i18n="counter_clear">Clear History</button>
+                                <button class="secondary-btn" id="btnClearHistory" style="padding: 0 12px; font-size: 12px; height: 28px;" data-i18n="counter_clear">Clear</button>
                             </div>
                             <div class="recent-scans-list-container" style="max-height: 200px; overflow-y: auto;">
                                 <ul class="recent-scans-list" id="recentScansList" style="list-style: none; padding: 0; margin: 0;">
