@@ -258,7 +258,7 @@ window.fetchInitialData = async function fetchInitialData() {
         if (inventory.length === 0) {
             const brands = ['Sony', 'Apple', 'Samsung', 'Logitech', 'Dell', 'Asus'];
             const types = ['gift', 'sample', 'other'];
-            const locations = ['A1', 'B2', 'C3', 'Front Desk', 'Storage 1'];
+            const locations = ['DO', 'Gò Vấp'];
             for(let i=0; i<15; i++) {
                 let t = types[Math.floor(Math.random()*types.length)];
                 let item = {
@@ -688,6 +688,19 @@ function setupEventListeners() {
     if(closeSampleDetailsBtn) closeSampleDetailsBtn.addEventListener('click', () => sampleDetailsModal.classList.remove('active'));
     if(closeSampleDetailsFooterBtn) closeSampleDetailsFooterBtn.addEventListener('click', () => sampleDetailsModal.classList.remove('active'));
 
+    // Radio toggle for stock destination
+    const stockActionRadios = document.querySelectorAll('input[name="stockAction"]');
+    const stockDestinationGroup = document.getElementById('stockDestinationGroup');
+    stockActionRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'move' && stockDestinationGroup) {
+                stockDestinationGroup.style.display = 'block';
+            } else if (stockDestinationGroup) {
+                stockDestinationGroup.style.display = 'none';
+            }
+        });
+    });
+
     if(stockForm) stockForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const itemId = document.getElementById('stockItemId').value;
@@ -710,6 +723,33 @@ function setupEventListeners() {
             } else if (action === 'adjust') {
                 newQty = amount;
                 actionText = `Adjusted Stock to ${amount}`;
+            } else if (action === 'move') {
+                if (newQty < amount) {
+                    alert(t('insufficient_stock') || 'Insufficient stock to move.');
+                    return;
+                }
+                const destLoc = document.getElementById('stockDestinationLocation').value;
+                if (item.location === destLoc) {
+                    alert('Item is already in this location.');
+                    return;
+                }
+                newQty -= amount;
+                actionText = `Moved ${amount} to ${destLoc}`;
+                
+                // Find or create target item
+                const targetItemIndex = inventory.findIndex(i => 
+                    i.name === item.name && 
+                    i.brand === item.brand && 
+                    i.type === item.type && 
+                    i.location === destLoc
+                );
+                
+                if (targetItemIndex !== -1) {
+                    inventory[targetItemIndex].quantity = (inventory[targetItemIndex].quantity || 0) + amount;
+                } else {
+                    const newItem = { ...item, id: generateId(), location: destLoc, quantity: amount };
+                    inventory.push(newItem);
+                }
             }
             
             try {
@@ -817,6 +857,19 @@ function setupEventListeners() {
     if (closeTransferModalBtn) closeTransferModalBtn.addEventListener('click', closeTransferModal);
     if (cancelTransferModalBtn) cancelTransferModalBtn.addEventListener('click', closeTransferModal);
 
+    // Radio toggle for transfer destination
+    const transferActionRadios = document.querySelectorAll('input[name="transferAction"]');
+    const transferDestinationGroup = document.getElementById('transferDestinationGroup');
+    transferActionRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'move' && transferDestinationGroup) {
+                transferDestinationGroup.style.display = 'block';
+            } else if (transferDestinationGroup) {
+                transferDestinationGroup.style.display = 'none';
+            }
+        });
+    });
+
     if (transferForm) {
         transferForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -847,6 +900,32 @@ function setupEventListeners() {
                         } else if (action === 'adjust') {
                             newQty = amount;
                             actionText = `Adjusted Stock to ${amount}`;
+                        } else if (action === 'move') {
+                            if (newQty < amount) {
+                                alert(t('insufficient_stock') || 'Insufficient stock to move.');
+                                return;
+                            }
+                            const destLoc = document.getElementById('transferDestinationLocation').value;
+                            if (item.location === destLoc) {
+                                alert('Item is already in this location.');
+                                return;
+                            }
+                            newQty -= amount;
+                            actionText = `Moved ${amount} to ${destLoc}`;
+                            
+                            const targetItemIndex = inventory.findIndex(i => 
+                                i.name === item.name && 
+                                i.brand === item.brand && 
+                                i.type === item.type && 
+                                i.location === destLoc
+                            );
+                            
+                            if (targetItemIndex !== -1) {
+                                inventory[targetItemIndex].quantity = (inventory[targetItemIndex].quantity || 0) + amount;
+                            } else {
+                                const newItem = { ...item, id: generateId(), location: destLoc, quantity: amount };
+                                inventory.push(newItem);
+                            }
                         }
 
                         inventory[index] = { ...inventory[index], quantity: newQty };
@@ -1084,7 +1163,7 @@ function populateFilterDropdowns() {
     if(!filterBrand || !filterLocation) return;
     
     const brands = [...new Set(inventory.map(i => i.brand))].filter(Boolean).sort();
-    const locations = [...new Set(inventory.map(i => i.location))].filter(Boolean).sort();
+    const locations = ['DO', 'Gò Vấp'];
 
     const currentBrand = filterBrand.value;
     const currentLocation = filterLocation.value;

@@ -446,7 +446,10 @@
                     </div>
                     <div class="form-group half">
                         <label for="itemLocation" data-i18n="label_location">Location</label>
-                        <input type="text" id="itemLocation" required data-i18n="placeholder_location" placeholder="e.g. A1-Bin4">
+                        <select id="itemLocation" required>
+                            <option value="DO">DO</option>
+                            <option value="Gò Vấp">Gò Vấp</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -586,7 +589,17 @@
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
                             <input type="radio" name="stockAction" value="adjust"> <span data-i18n="action_adjust">Adjust (=)</span>
                         </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
+                            <input type="radio" name="stockAction" value="move"> Move Location (->)
+                        </label>
                     </div>
+                </div>
+                <div class="form-group" id="stockDestinationGroup" style="display: none; margin-bottom: 12px;">
+                    <label for="stockDestinationLocation">Destination Location</label>
+                    <select id="stockDestinationLocation">
+                        <option value="DO">DO</option>
+                        <option value="Gò Vấp">Gò Vấp</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="stockAmount" data-i18n="label_amount">Amount</label>
@@ -654,7 +667,17 @@
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
                             <input type="radio" name="transferAction" value="adjust"> <span data-i18n="action_adjust">Adjust (=)</span>
                         </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary);">
+                            <input type="radio" name="transferAction" value="move"> Move Location (->)
+                        </label>
                     </div>
+                </div>
+                <div class="form-group" id="transferDestinationGroup" style="display: none; margin-bottom: 12px;">
+                    <label for="transferDestinationLocation">Destination Location</label>
+                    <select id="transferDestinationLocation">
+                        <option value="DO">DO</option>
+                        <option value="Gò Vấp">Gò Vấp</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="transferDescription" data-i18n="label_desc">Description</label>
