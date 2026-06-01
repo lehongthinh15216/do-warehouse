@@ -55,6 +55,16 @@ const bulkAddForm = document.getElementById('bulkAddForm');
 const bulkAddTableBody = document.getElementById('bulkAddTableBody');
 const addBulkRowBtn = document.getElementById('addBulkRowBtn');
 
+// Bulk Sent Modal
+const bulkSentBtn = document.getElementById('bulkSentBtn');
+const bulkSentModal = document.getElementById('bulkSentModal');
+const closeBulkSentModalBtn = document.getElementById('closeBulkSentModalBtn');
+const cancelBulkSentModalBtn = document.getElementById('cancelBulkSentModalBtn');
+const bulkSentForm = document.getElementById('bulkSentForm');
+const bulkSentTableBody = document.getElementById('bulkSentTableBody');
+const addBulkSentRowBtn = document.getElementById('addBulkSentRowBtn');
+const giftItemsList = document.getElementById('giftItemsList');
+
 // Single Add Dynamic Form Elements
 const inputItemType = document.getElementById('itemType');
 const fieldSerialNumber = document.getElementById('fieldSerialNumber');
@@ -637,6 +647,93 @@ function setupEventListeners() {
         }
     });
 
+    // Bulk Sent Modal Logic
+    if(bulkSentBtn) bulkSentBtn.addEventListener('click', () => {
+        if (giftItemsList) {
+            giftItemsList.innerHTML = '';
+            inventory.filter(i => i.type === 'gift').forEach(item => {
+                const option = document.createElement('option');
+                const displayName = `${item.brand ? `[${item.brand}] ` : ''}${item.name}`;
+                option.value = displayName;
+                option.dataset.id = item.id;
+                giftItemsList.appendChild(option);
+            });
+        }
+        
+        if (bulkSentTableBody) bulkSentTableBody.innerHTML = '';
+        for(let i=0; i<5; i++) {
+            addBulkSentRow();
+        }
+        if (bulkSentModal) bulkSentModal.classList.add('active');
+    });
+
+    const closeBulkSentModal = () => {
+        if (bulkSentModal) bulkSentModal.classList.remove('active');
+        if (bulkSentTableBody) bulkSentTableBody.innerHTML = '';
+    };
+
+    if(closeBulkSentModalBtn) closeBulkSentModalBtn.addEventListener('click', closeBulkSentModal);
+    if(cancelBulkSentModalBtn) cancelBulkSentModalBtn.addEventListener('click', closeBulkSentModal);
+    if(addBulkSentRowBtn) addBulkSentRowBtn.addEventListener('click', addBulkSentRow);
+
+    if(bulkSentForm) bulkSentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const rows = document.querySelectorAll('.bulk-sent-row');
+        const itemsToProcess = [];
+        let hasError = false;
+
+        rows.forEach(row => {
+            const id = row.querySelector('.bulk-sent-item-id').value;
+            const qtyInput = row.querySelector('.bulk-sent-qty');
+            const qty = parseInt(qtyInput.value) || 0;
+            const desc = row.querySelector('.bulk-sent-desc').value;
+            
+            if(!id) return; // skip empty rows
+            
+            const matchedItem = inventory.find(i => i.id === id);
+            if (!matchedItem) {
+                alert('Item not found in inventory.');
+                hasError = true;
+                return;
+            }
+            if (qty > (matchedItem.quantity || 0)) {
+                alert(`Insufficient stock for ${matchedItem.name}. Available: ${matchedItem.quantity}`);
+                hasError = true;
+                return;
+            }
+
+            itemsToProcess.push({ item: matchedItem, qtyToDeduct: qty, desc });
+        });
+
+        if (hasError || itemsToProcess.length === 0) return;
+
+        try {
+            itemsToProcess.forEach(processData => {
+                const idx = inventory.findIndex(i => i.id === processData.item.id);
+                if (idx !== -1) {
+                    inventory[idx].quantity -= processData.qtyToDeduct;
+                }
+            });
+            await driveWrite('item-data.json', inventory);
+            
+            if (itemsToProcess.length === 1) {
+                logActivity('update', `Sent ${itemsToProcess[0].qtyToDeduct} of <strong>${itemsToProcess[0].item.name}</strong>. Desc: ${itemsToProcess[0].desc}`);
+            } else {
+                logActivity('update', `Bulk sent <strong>${itemsToProcess.reduce((sum, p) => sum + p.qtyToDeduct, 0)} items</strong> across ${itemsToProcess.length} gifts.`);
+            }
+            
+            populateFilterDropdowns();
+            updateDashboardStats();
+            applyFiltersAndRender();
+            applySampleFiltersAndRender(); 
+            closeBulkSentModal();
+        } catch (error) {
+            console.error("Error bulk sending items: ", error);
+            alert("Error updating items in database.");
+        }
+    });
+
     // Assign Modal Logic
     const closeAssignModal = () => {
         AssignModal.classList.remove('active');
@@ -1088,6 +1185,67 @@ function addBulkRow() {
     });
 
     bulkAddTableBody.appendChild(tr);
+}
+
+function addBulkSentRow() {
+    if(!bulkSentTableBody) return;
+    
+    const tr = document.createElement('tr');
+    tr.className = 'bulk-sent-row';
+    tr.innerHTML = `
+        <td>
+            <input type="text" class="bulk-sent-item" required list="giftItemsList" placeholder="Search gift..." autocomplete="off">
+            <input type="hidden" class="bulk-sent-item-id">
+        </td>
+        <td>
+            <input type="text" class="bulk-sent-location" readonly style="background: rgba(0,0,0,0.1); border-color: transparent;" placeholder="-">
+        </td>
+        <td>
+            <input type="number" class="bulk-sent-qty" required min="1" placeholder="Qty" disabled>
+        </td>
+        <td>
+            <input type="text" class="bulk-sent-desc" placeholder="Recipient / Description">
+        </td>
+        <td style="text-align: center;">
+            <button type="button" class="btn-icon Delete remove-bulk-sent-row" title="Remove"><i class='bx bx-trash'></i></button>
+        </td>
+    `;
+    
+    const itemInput = tr.querySelector('.bulk-sent-item');
+    const idInput = tr.querySelector('.bulk-sent-item-id');
+    const locInput = tr.querySelector('.bulk-sent-location');
+    const qtyInput = tr.querySelector('.bulk-sent-qty');
+    
+    itemInput.addEventListener('input', () => {
+        const val = itemInput.value;
+        const matchedItem = inventory.find(i => `${i.brand ? `[${i.brand}] ` : ''}${i.name}` === val && i.type === 'gift');
+        if (matchedItem) {
+            idInput.value = matchedItem.id;
+            locInput.value = matchedItem.location || '';
+            qtyInput.disabled = false;
+            qtyInput.max = matchedItem.quantity || 0;
+            if (parseInt(qtyInput.value) > matchedItem.quantity) {
+                qtyInput.value = matchedItem.quantity;
+            }
+        } else {
+            idInput.value = '';
+            locInput.value = '';
+            qtyInput.disabled = true;
+            qtyInput.value = '';
+        }
+    });
+
+    const removeBtn = tr.querySelector('.remove-bulk-sent-row');
+    removeBtn.addEventListener('click', () => {
+        if(bulkSentTableBody.children.length > 1) {
+            tr.remove();
+        } else {
+            tr.querySelectorAll('input').forEach(inp => inp.value = '');
+            qtyInput.disabled = true;
+        }
+    });
+    
+    bulkSentTableBody.appendChild(tr);
 }
 
 // --- Material 3 Logic ---

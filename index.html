@@ -96,6 +96,9 @@
                         <i class='bx bx-cloud-upload' id="syncIcon"></i>
                         <span id="syncText">Connecting...</span>
                     </div>
+                    <button class="secondary-btn" id="bulkSentBtn" data-i18n="btn_bulk_send" style="color: var(--accent-red); border-color: rgba(255,107,107,0.3);">
+                        <i class='bx bx-send'></i> <span>Bulk Send</span>
+                    </button>
                     <button class="secondary-btn" id="bulkAddBtn" data-i18n="btn_bulk_add">
                         <i class='bx bx-list-plus'></i> <span>Bulk Add</span>
                     </button>
@@ -526,6 +529,42 @@
                 <div class="modal-footer">
                     <button type="button" class="secondary-btn" id="cancelBulkModalBtn" data-i18n="btn_cancel">Cancel</button>
                     <button type="submit" class="primary-btn" data-i18n="btn_save_all">Save All Items</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Sent Modal -->
+    <datalist id="giftItemsList"></datalist>
+    <div class="modal-overlay" id="bulkSentModal">
+        <div class="modal-content glass-panel" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 data-i18n="modal_bulk_send_title">Bulk Send Items</h3>
+                <button class="close-btn" id="closeBulkSentModalBtn"><i class='bx bx-x'></i></button>
+            </div>
+            <form id="bulkSentForm" class="modal-form">
+                <div class="table-container" style="overflow-x: auto; overflow-y: auto; max-height: 50vh; margin-bottom: 0;">
+                    <table class="data-table bulk-sent-table" style="width: 100%; min-width: 800px; margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th style="width: 250px;" data-i18n="th_select_item">Select Item (Gift)</th>
+                                <th style="width: 100px;" data-i18n="th_location">Location</th>
+                                <th style="width: 100px;" data-i18n="th_qty_to_send">Qty</th>
+                                <th style="width: 200px;" data-i18n="th_desc_recipient">Description/Recipient</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulkSentTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 16px; margin-bottom: 24px;">
+                    <button type="button" class="secondary-btn" id="addBulkSentRowBtn" style="width: 100%; border-style: dashed; justify-content: center; background: rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px;"><i class='bx bx-plus'></i> <span data-i18n="btn_add_row">Add Another Row</span></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" id="cancelBulkSentModalBtn" data-i18n="btn_cancel">Cancel</button>
+                    <button type="submit" class="primary-btn" data-i18n="btn_send_all" style="background: var(--accent-red); color: white;">Send All Items</button>
                 </div>
             </form>
         </div>
