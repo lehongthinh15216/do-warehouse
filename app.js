@@ -1536,9 +1536,14 @@ window.openSampleDetailsModal = function(id) {
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
                 <div>${statusBadge}</div>
-                <button class="primary-btn" id="sdSaveInfoBtn" onclick="saveSampleInfo('${item.id}')">
-                    <i class='bx bx-save'></i> ${t('btn_save_info')}
-                </button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="secondary-btn" style="color: var(--accent-red); border-color: var(--accent-red);" onclick="sendSampleBack('${item.id}')">
+                        <i class='bx bx-archive-out'></i> Send to Brand
+                    </button>
+                    <button class="primary-btn" id="sdSaveInfoBtn" onclick="saveSampleInfo('${item.id}')">
+                        <i class='bx bx-save'></i> ${t('btn_save_info')}
+                    </button>
+                </div>
             </div>
         </div>`;
 
@@ -1735,6 +1740,33 @@ window.deleteItem = async function(id) {
                 updateDashboardStats();
             } catch (error) {
                 console.error("Error deleting item: ", error);
+            }
+        }
+    }
+};
+
+window.sendSampleBack = async function(id) {
+    if(confirm('Are you sure you want to send this sample back to the brand? This will permanently remove it from inventory.')) {
+        const item = inventory.find(i => i.id === id);
+        if(item) {
+            try {
+                const index = inventory.findIndex(i => i.id === id);
+                if (index !== -1) {
+                    inventory.splice(index, 1);
+                    await driveWrite('item-data.json', inventory);
+                }
+                
+                logActivity('remove', `Sent Sample <strong>${item.name}</strong>${item.serial ? ` (SN: ${item.serial})` : ''} back to Brand (${item.brand || 'Unknown'})`);
+                
+                const modal = document.getElementById('sampleDetailsModal');
+                if (modal) modal.classList.remove('active');
+
+                populateFilterDropdowns();
+                applyFiltersAndRender();
+                applySampleFiltersAndRender(); 
+                updateDashboardStats();
+            } catch (error) {
+                console.error("Error sending sample back: ", error);
             }
         }
     }
