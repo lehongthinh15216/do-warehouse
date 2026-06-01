@@ -59,3 +59,9 @@ The app is fully installable on Windows, Android, and iOS.
 - **Action Taken:** Integrated the Edit Modal and Stock Modal. Clicking any item opens the Edit modal first, which now contains a dedicated "Stock" button to seamlessly switch into stock transaction mode.
 - **Action Taken:** Addressed an offline logging bug where `logActivity` was attempting a network `fetch` to a nonexistent Node backend. Logs are now securely written to local storage and Google Drive via `driveWrite`.
 - **Action Taken:** Added an auto-populate mechanism to generate mock data if the inventory is completely empty, ensuring easier testing for new environments.
+
+**[2026-06-01] - Location Constraints, Move Stock & Bulk Send Features**
+- **Action Taken:** Enforced strict location constraints globally. Users can only select "DO" or "Gò Vấp" for locations and filters.
+- **Action Taken:** Added "Move Location (->)" functionality to the Stock and Transfer modals, allowing users to transfer stock between the two approved locations (including auto-merging duplicate items at the destination).
+- **Action Taken:** Added a "Send to Brand" function in the Sample Details modal to permanently remove and log returned samples.
+- **Action Taken:** Implemented a new "Bulk Send" feature specifically tailored for processing multiple "gift" items simultaneously. It includes automated stock validation, location auto-fill, individual item logging, and a configurable "Date Sent" field.
