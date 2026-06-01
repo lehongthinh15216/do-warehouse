@@ -660,6 +660,15 @@ function setupEventListeners() {
             });
         }
         
+        const dateInput = document.getElementById('bulkSentDate');
+        if (dateInput) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            dateInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+        
         if (bulkSentTableBody) bulkSentTableBody.innerHTML = '';
         for(let i=0; i<5; i++) {
             addBulkSentRow();
@@ -709,6 +718,9 @@ function setupEventListeners() {
         if (hasError || itemsToProcess.length === 0) return;
 
         try {
+            const dateVal = document.getElementById('bulkSentDate').value;
+            const customTime = dateVal ? new Date(dateVal).toLocaleDateString() : null;
+
             itemsToProcess.forEach(processData => {
                 const idx = inventory.findIndex(i => i.id === processData.item.id);
                 if (idx !== -1) {
@@ -717,11 +729,9 @@ function setupEventListeners() {
             });
             await driveWrite('item-data.json', inventory);
             
-            if (itemsToProcess.length === 1) {
-                logActivity('update', `Sent ${itemsToProcess[0].qtyToDeduct} of <strong>${itemsToProcess[0].item.name}</strong>. Desc: ${itemsToProcess[0].desc}`);
-            } else {
-                logActivity('update', `Bulk sent <strong>${itemsToProcess.reduce((sum, p) => sum + p.qtyToDeduct, 0)} items</strong> across ${itemsToProcess.length} gifts.`);
-            }
+            itemsToProcess.forEach(processData => {
+                logActivity('update', `Sent ${processData.qtyToDeduct} of <strong>${processData.item.name}</strong>. Desc: ${processData.desc || 'N/A'}`, customTime);
+            });
             
             populateFilterDropdowns();
             updateDashboardStats();
@@ -1967,13 +1977,13 @@ window.returnSample = async function(id) {
     }
 };
 
-async function logActivity(type, text) {
+async function logActivity(type, text, customTime = null) {
     try {
         const newLog = {
             id: generateId(),
             type: type,
             text: text,
-            time: new Date().toLocaleString()
+            time: customTime ? customTime : new Date().toLocaleString()
         };
         
         activityLog.unshift(newLog);
