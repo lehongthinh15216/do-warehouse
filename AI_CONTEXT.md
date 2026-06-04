@@ -65,3 +65,8 @@ The app is fully installable on Windows, Android, and iOS.
 - **Action Taken:** Added "Move Location (->)" functionality to the Stock and Transfer modals, allowing users to transfer stock between the two approved locations (including auto-merging duplicate items at the destination).
 - **Action Taken:** Added a "Send to Brand" function in the Sample Details modal to permanently remove and log returned samples.
 - **Action Taken:** Implemented a new "Bulk Send" feature specifically tailored for processing multiple "gift" items simultaneously. It includes automated stock validation, location auto-fill, individual item logging, and a configurable "Date Sent" field.
+
+**[2026-06-04] - Bulk Add Enhancements & UI Refinements**
+- **Action Taken:** Updated the "Bulk Add" modal to align with standard Add Item logic. Replaced plain text location inputs with strict dropdowns ("DO" and "Gò Vấp") and added a "Description" field for each row.
+- **Action Taken:** Improved the empty-row handling in "Bulk Add" by making default values blank, removing strict HTML required validation from inputs, and implementing custom JS logic to silently ignore completely empty rows while alerting the user if a row is only partially filled.
+- **Action Taken:** Restyled the "Delete" buttons in both the Inventory List and Grid views. The buttons were transformed from a basic icon into a prominent pill-shaped button containing both a trash icon and the text "Delete", featuring a light red container that turns solid red on hover.
