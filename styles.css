@@ -803,6 +803,27 @@ body {
     background-color: var(--md-sys-color-error-container);
 }
 
+.delete-pill {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    border: none;
+    padding: 0 16px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.delete-pill:hover {
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+}
+
 /* --- Modals (Dialogs in M3) --- */
 .modal-overlay {
     position: fixed;

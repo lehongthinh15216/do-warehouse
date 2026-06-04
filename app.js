@@ -597,21 +597,37 @@ function setupEventListeners() {
         
         const rows = document.querySelectorAll('.bulk-add-row');
         const itemsToSave = [];
+        let hasError = false;
 
-        rows.forEach(row => {
+        rows.forEach((row, index) => {
+            if (hasError) return;
             const type = row.querySelector('.bulk-type').value;
-            const name = row.querySelector('.bulk-name').value;
-            if(!name) return; // skip empty rows
+            const name = row.querySelector('.bulk-name').value.trim();
+            const brand = row.querySelector('.bulk-brand').value.trim();
+            const location = row.querySelector('.bulk-location').value;
+            const qtyOrSerial = row.querySelector('.bulk-qty-serial').value.trim();
+            const description = row.querySelector('.bulk-desc') ? row.querySelector('.bulk-desc').value.trim() : '';
+
+            // Check if row is completely empty
+            if (!type && !name && !brand && !location && !qtyOrSerial && !description) {
+                return; // skip completely empty rows
+            }
+
+            // If partially filled, validate required fields
+            if (!type || !name || !brand || !location || !qtyOrSerial) {
+                alert(`Please fill out all required fields (Type, Name, Brand, Location, Qty/Serial) in row ${index + 1}`);
+                hasError = true;
+                return;
+            }
 
             const itemData = {
                 type,
-                name: name,
-                brand: row.querySelector('.bulk-brand').value,
-                location: row.querySelector('.bulk-location').value,
-                description: ''
+                name,
+                brand,
+                location,
+                description
             };
 
-            const qtyOrSerial = row.querySelector('.bulk-qty-serial').value;
             if (type === 'sample') {
                 itemData.serial = qtyOrSerial;
                 itemData.quantity = 1;
@@ -622,7 +638,7 @@ function setupEventListeners() {
             itemsToSave.push(itemData);
         });
 
-        if (itemsToSave.length === 0) return;
+        if (hasError || itemsToSave.length === 0) return;
 
         try {
             itemsToSave.forEach(item => { item.id = generateId(); });
@@ -1154,23 +1170,31 @@ function addBulkRow() {
     tr.className = 'bulk-add-row';
     tr.innerHTML = `
         <td>
-            <select class="bulk-type" required>
+            <select class="bulk-type">
+                <option value="" disabled selected>Select...</option>
                 <option value="sample">Sample</option>
                 <option value="gift">Gift</option>
                 <option value="other">Other</option>
             </select>
         </td>
         <td>
-            <input type="text" class="bulk-name" required placeholder="Name">
+            <input type="text" class="bulk-name" placeholder="Name">
         </td>
         <td>
-            <input type="text" class="bulk-brand" required placeholder="${t('label_brand')}">
+            <input type="text" class="bulk-brand" placeholder="${t('label_brand')}">
         </td>
         <td>
-            <input type="text" class="bulk-location" required placeholder="Loc">
+            <select class="bulk-location">
+                <option value="" disabled selected>Select...</option>
+                <option value="DO">DO</option>
+                <option value="Gò Vấp">Gò Vấp</option>
+            </select>
         </td>
         <td>
-            <input type="text" class="bulk-qty-serial" required placeholder="SN / Qty">
+            <input type="text" class="bulk-qty-serial" placeholder="SN / Qty">
+        </td>
+        <td>
+            <input type="text" class="bulk-desc" placeholder="${t('label_desc') || 'Description'}">
         </td>
         <td style="text-align: center;">
             <button type="button" class="btn-icon Delete remove-bulk-row" title="Remove"><i class='bx bx-trash'></i></button>
@@ -1469,7 +1493,9 @@ function renderInventoryTable(data) {
             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
             <td>
                 <div class="action-btns">
-                    <button class="btn-icon Delete" title="${t('delete')}" onclick="event.stopPropagation(); deleteItem('${item.id}')"><i class='bx bx-trash'></i></button>
+                    <button class="delete-pill" title="${t('delete')}" onclick="event.stopPropagation(); deleteItem('${item.id}')">
+                        <i class='bx bx-trash'></i> <span>${t('delete') || 'Delete'}</span>
+                    </button>
                 </div>
             </td>
         `;
@@ -1497,7 +1523,9 @@ function renderInventoryGrid(data) {
                         <span class="tag-badge tag-type">${item.type}</span>
                     </div>
                 </div>
-                <button class="btn-icon Delete" title="${t('delete')}" onclick="event.stopPropagation(); deleteItem('${item.id}')"><i class='bx bx-trash'></i></button>
+                <button class="delete-pill" style="height: 28px; padding: 0 12px; font-size: 12px;" title="${t('delete')}" onclick="event.stopPropagation(); deleteItem('${item.id}')">
+                    <i class='bx bx-trash'></i> <span>${t('delete') || 'Delete'}</span>
+                </button>
             </div>
             <div class="item-card-info">
                 <span><strong>${t('label_location')}:</strong> ${item.location}</span>
