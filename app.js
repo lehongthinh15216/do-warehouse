@@ -708,13 +708,32 @@ function setupEventListeners() {
         const itemsToProcess = [];
         let hasError = false;
 
-        rows.forEach(row => {
+        rows.forEach((row, index) => {
+            if (hasError) return;
+            const itemText = row.querySelector('.bulk-sent-item').value.trim();
             const id = row.querySelector('.bulk-sent-item-id').value;
             const qtyInput = row.querySelector('.bulk-sent-qty');
-            const qty = parseInt(qtyInput.value) || 0;
-            const desc = row.querySelector('.bulk-sent-desc').value;
+            const qtyRaw = qtyInput.value.trim();
+            const qty = parseInt(qtyRaw) || 0;
+            const desc = row.querySelector('.bulk-sent-desc').value.trim();
             
-            if(!id) return; // skip empty rows
+            // Check if row is completely empty
+            if (!itemText && !qtyRaw && !desc) {
+                return; // skip completely empty rows
+            }
+
+            // Validate required fields if partially filled
+            if (!itemText || !qtyRaw) {
+                alert(`Please fill out required fields (Select Item, Qty) in row ${index + 1}`);
+                hasError = true;
+                return;
+            }
+
+            if (!id) {
+                alert(`Invalid item selected in row ${index + 1}. Please select a valid item from the list.`);
+                hasError = true;
+                return;
+            }
             
             const matchedItem = inventory.find(i => i.id === id);
             if (!matchedItem) {
@@ -724,6 +743,11 @@ function setupEventListeners() {
             }
             if (qty > (matchedItem.quantity || 0)) {
                 alert(`Insufficient stock for ${matchedItem.name}. Available: ${matchedItem.quantity}`);
+                hasError = true;
+                return;
+            }
+            if (qty <= 0) {
+                alert(`Quantity must be at least 1 in row ${index + 1}.`);
                 hasError = true;
                 return;
             }
@@ -1228,14 +1252,14 @@ function addBulkSentRow() {
     tr.className = 'bulk-sent-row';
     tr.innerHTML = `
         <td>
-            <input type="text" class="bulk-sent-item" required list="giftItemsList" placeholder="Search gift..." autocomplete="off">
+            <input type="text" class="bulk-sent-item" list="giftItemsList" placeholder="Search gift..." autocomplete="off">
             <input type="hidden" class="bulk-sent-item-id">
         </td>
         <td>
             <input type="text" class="bulk-sent-location" readonly style="background: rgba(0,0,0,0.1); border-color: transparent;" placeholder="-">
         </td>
         <td>
-            <input type="number" class="bulk-sent-qty" required min="1" placeholder="Qty" disabled>
+            <input type="number" class="bulk-sent-qty" min="1" placeholder="Qty" disabled>
         </td>
         <td>
             <input type="text" class="bulk-sent-desc" placeholder="Recipient / Description">
