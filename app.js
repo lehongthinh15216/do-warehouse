@@ -1221,7 +1221,7 @@ function addBulkRow() {
             <input type="text" class="bulk-desc" placeholder="${t('label_desc') || 'Description'}">
         </td>
         <td style="text-align: center;">
-            <button type="button" class="btn-icon Delete remove-bulk-row" title="Remove"><i class='bx bx-trash'></i></button>
+            <button type="button" class="delete-pill remove-bulk-row" style="margin: 0 auto; height: 28px; padding: 0 12px; font-size: 12px;" title="Remove"><i class='bx bx-trash'></i> <span>Remove</span></button>
         </td>
     `;
     
@@ -1265,7 +1265,7 @@ function addBulkSentRow() {
             <input type="text" class="bulk-sent-desc" placeholder="Recipient / Description">
         </td>
         <td style="text-align: center;">
-            <button type="button" class="btn-icon Delete remove-bulk-sent-row" title="Remove"><i class='bx bx-trash'></i></button>
+            <button type="button" class="delete-pill remove-bulk-sent-row" style="margin: 0 auto; height: 28px; padding: 0 12px; font-size: 12px;" title="Remove"><i class='bx bx-trash'></i> <span>Remove</span></button>
         </td>
     `;
     
